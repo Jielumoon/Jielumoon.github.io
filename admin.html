@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 - Dan's Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stylespc.css" media="screen and (min-width: 800px)">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #394E6A;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #394E6A;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #DFE5F0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #394E6A;
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #394E6A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #2c3d54;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">管理员登录</h2>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="login-btn">登录</button>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        // 初始化管理员账号（实际应用中应该使用更安全的方式存储）
+        if (!localStorage.getItem('adminCredentials')) {
+            const defaultAdmin = {
+                username: 'admin',
+                password: '123456' // 这里应该使用更强的密码
+            };
+            localStorage.setItem('adminCredentials', JSON.stringify(defaultAdmin));
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            const adminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                // 登录成功，设置登录状态
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                // 跳转到管理面板
+                window.location.href = 'admin-panel.html';
+            } else {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = '用户名或密码错误';
+            }
+
+            return false;
+        }
+    </script>
+</body>
+</html>

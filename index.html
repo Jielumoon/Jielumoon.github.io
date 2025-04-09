@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Team414's Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    .sticky-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        background-color: #f5f5f5;
+        color: #666;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        font-size: 0.8em;
+        margin-left: 8px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    a { color: #66a7ff }
+
+    pre, code {
+        font-family: 'Courier New', monospace;
+        background-color: #f7f7f7;
+        border-radius: 3px;
+        padding: 3px;
+        overflow-x: auto;
+    }
+
+    code {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: normal;
+    }
+
+    blockquote {
+        background-color: #f9f9f9;
+        border-left: 4px solid #394E6A;
+        padding-left: 15px;
+        margin: 20px 0;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        display: block;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th { background-color: #f0f0f0; }
+
+    hr {
+        border: 0;
+        border-top: 2px solid #394E6A;
+        margin: 20px 0;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 13px;
+    }
+
+    .search-input {
+        padding: 8px 12px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.3s ease;
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+        font-weight: bold;
+    }
+
+    .search-input:focus {
+        border-color: #394E6A;
+        font-weight: bold;
+    }
+
+    .search-container i {
+        margin-left: 10px;
+        font-size: 20px;
+        color: #888;
+    }
+
+    .blog-container.title,
+    .blog-container.date {
+        width: 100%;
+    }
+
+    .blog-container.content {
+        width: 100%;
+        word-wrap: break-word;
+    }
+
+    ol li, ul li { margin-left: 15px; }
+
+    .weather-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .weather-info h3 {
+        margin-bottom: 10px;
+        color: #394E6A;
+    }
+
+    .weather-info p {
+        margin: 5px 0;
+        font-size: 1.1em;
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            <a href="https://xxxxx.xxxx/" style="color: #394E6A; text-decoration: none;">📅Team414's Blog</a>
+        </h1>
+    </header>
+
+    <div class="layout">
+        <div class="left">
+            <div class="container">
+                <div class="title">Team414的</div>
+                <div class="title">🗂博客</div>
+            </div>
+            <div class="container">
+                <div class="title">📝每日一言</div>
+                <div class="content" id="daily-quote">
+                    <p>正在加载...</p>
+                </div>
+            </div>
+            <div class="container">
+                <img src="blog.webp" alt="关于我" style="width: 100%; border-radius: 10px;">
+                <div class="title">🌐About</div>
+                <div class="content">
+                    <p>记录了Team414开发经历和所思所想✍️</p>
+                    <p>希望我的探索和经验也能对你的开发产生一些启发🤠</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="content footer-content">
+                    <p>🎬网站已安全运行了 <span id="running-days"></span> 天</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="container search-container">
+                <input type="text" id="search-input" placeholder="输入关键词搜索博客" class="search-input">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div class="container weather-container" id="weather-container">
+                <div class="title">🌤️ 今日天气</div>
+                <div class="content" id="weather-content">
+                    <p>正在加载天气信息...</p>
+                </div>
+            </div>
+
+            <div id="blog-list">
+                <!-- 博客内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="blogs.js"></script>
+    <script>
+    // 获取每日一言
+    async function fetchDailyQuote() {
+        try {
+            const response = await fetch('https://v1.hitokoto.cn/');
+            const data = await response.json();
+            const quoteElement = document.getElementById('daily-quote');
+            quoteElement.innerHTML = `<p>${data.hitokoto}</p><p style="font-size: 0.9em; color: #666; margin-top: 5px;">——${data.from}</p>`;
+        } catch (error) {
+            console.error('获取每日一言时出错:', error);
+            const quoteElement = document.getElementById('daily-quote');
+            quoteElement.innerHTML = '<p>获取一言失败，请稍后再试。</p>';
+        }
+    }
+
+    // 更新天气信息
+    async function updateWeatherInfo() {
+        const weatherContent = document.getElementById('weather-content');
+        try {
+            // 检查缓存
+            const cachedWeather = localStorage.getItem('weatherData');
+            const cachedTime = localStorage.getItem('weatherLastUpdate');
+            const currentTime = new Date().getTime();
+
+            // 如果缓存存在且未过期（6小时 = 21600000毫秒）
+            if (cachedWeather && cachedTime && (currentTime - parseInt(cachedTime)) < 21600000) {
+                const weatherData = JSON.parse(cachedWeather);
+                updateWeatherDisplay(weatherData);
+                return;
+            }
+
+            const weatherData = await getWeatherData();
+            // 更新缓存
+            localStorage.setItem('weatherData', JSON.stringify(weatherData));
+            localStorage.setItem('weatherLastUpdate', currentTime.toString());
+            updateWeatherDisplay(weatherData);
+        } catch (error) {
+            console.error('更新天气信息时出错:', error);
+            weatherContent.innerHTML = '<p>天气信息获取失败，请稍后再试。</p>';
+        }
+    }
+
+    // 更新天气显示
+    function updateWeatherDisplay(weatherData) {
+        const weatherContent = document.getElementById('weather-content');
+        const weatherLines = weatherData.split('\n');
+        const [weather, humidity, wind] = weatherLines;
+        const currentTime = formatDateTime(new Date());
+
+        weatherContent.innerHTML = `
+            <div class="weather-info">
+                <p>🕒 更新时间：${currentTime}</p>
+                <p>🌤️ 天气状况：${weather}</p>
+                <p>💧 ${humidity}</p>
+                <p>🌪️ ${wind}</p>
+            </div>
+        `;
+    }
+
+    // 初始化博客数据
+    async function initializeBlogs() {
+        try {
+            // 如果localStorage中没有博客数据，则使用默认数据初始化
+            if (!localStorage.getItem('blogs')) {
+                const defaultBlogs = [];
+                localStorage.setItem('blogs', JSON.stringify(defaultBlogs));
+            }
+
+            // 获取博客数据
+            let blogs = JSON.parse(localStorage.getItem('blogs'));
+            renderBlogs(blogs);
+
+            // 初始化天气信息
+            await updateWeatherInfo();
+        } catch (error) {
+            console.error('初始化博客数据时出错:', error);
+            const blogList = document.getElementById('blog-list');
+            blogList.innerHTML = '<div class="container blog-container"><div class="title">加载失败</div><div class="content">博客数据加载失败，请刷新页面重试。</div></div>';
+        }
+    }
+
+    // 渲染博客列表
+    function renderBlogs(blogsToRender) {
+        const blogList = document.getElementById('blog-list');
+        blogList.innerHTML = '';
+        
+        if (blogsToRender && blogsToRender.length > 0) {
+            blogsToRender.forEach(blog => {
+                const blogContainer = document.createElement('div');
+                blogContainer.className = 'container blog-container';
+                blogContainer.innerHTML = `
+                    <div class="title">📄<a href="blog-detail.html?id=${blog.id}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
+                    <div class="date">📅 ：${blog.date}</div>
+                    <div class="content">${blog.content}</div>
+                `;
+                blogList.appendChild(blogContainer);
+            });
+        } else {
+            blogList.innerHTML = '<div class="container blog-container"><div class="title">暂无博客</div><div class="content">目前没有可显示的博客内容。</div></div>';
+        }
+    }
+
+    // 搜索功能
+    function searchBlogs() {
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+        let blogs = JSON.parse(localStorage.getItem('blogs') || '[]');
+        const filteredBlogs = blogs.filter(blog => 
+            blog.title.toLowerCase().includes(searchInput) || 
+            blog.content.toLowerCase().includes(searchInput)
+        );
+        renderBlogs(filteredBlogs);
+    }
+
+    // 计算运行天数
+    function calculateRunningDays() {
+        const startDate = new Date('2025-3-18');
+        const currentDate = new Date();
+        const differenceInTime = currentDate - startDate;
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+        document.getElementById('running-days').textContent = differenceInDays;
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeBlogs();
+        calculateRunningDays();
+        document.getElementById('search-input').addEventListener('input', searchBlogs);
+        startDynamicTimeUpdate(); // 启动动态时间更新
+
+        // 获取并显示每日一言
+        fetchDailyQuote();
+        // 每6小时更新一次一言
+        setInterval(fetchDailyQuote, 21600000);
+
+        // 每6小时更新一次天气信息
+        setInterval(updateWeatherInfo, 21600000);
+    });
+    </script>
+</body>
+</html>

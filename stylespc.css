@@ -1,35 +1,37 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #DFE5F0;
-  color: #394E6A;
-  padding-top: 60px; /* 页面整体下移60px */
-  font-weight: bold;
-}
+@media screen and (min-width: 800px) {
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #DFE5F0;
+        color: #394E6A;
+        padding-top: 60px;
+        font-weight: bold;
+    }
 
-/* 顶部导航栏 */
-header {
-  width: 100%;
-  height: 60px;
-  background-color: #fff;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0px;
-}
+    /* 顶部导航栏 */
+    header {
+        width: 100%;
+        height: 60px;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
 
 
 header h1 {
-  font-weight: bold;
-  font-size: 20px;
-  margin: 0;
-  text-align: center;
-  flex-grow: 1;
+font-weight: bold;
+font-size: 20px;
+margin: 0;
+text-align: center;
+flex-grow: 1;
 }
 
 
@@ -43,79 +45,113 @@ header h1 {
 
 
 
-/* 布局样式 */
-.layout {
-  display: flex;
-  padding: 20px;
-  width: 100%;
-  overflow-x: hidden;  /*禁止横向滚动 */ 
-}
+    /* 布局样式 */
+    .layout {
+        display: flex;
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+        gap: 20px;
+    }
 
-/* 左侧固定 */
-.left {
-  position: fixed; /* 固定在页面左侧 */
-  top: 60px; /* 导航栏下方 */
-  left: 0;
-  width: calc(33% + 10px); /* 左侧固定宽度 */
-  height: calc(100% - 60px); /* 高度为剩余空间 */
-  background-color: #DFE5F0;; /* 可以自定义左侧的背景色 */
-  overflow-y: auto; /* 如果内容超出时可以垂直滚动 */
-}
+    /* 左侧固定 */
+    .left {
+        width: 30%;
+        min-width: 300px;
+    }
 
-/* 右侧内容区域 */
-.right {
-  position: fixed; /* 固定在页面左侧 */
-  top: 60px; /* 导航栏下方 */
-  margin-left: calc(33% - 20px); /* 右侧留出左侧宽度 */
-  width: 66%; /* 左侧固定宽度 */
-  height: calc(100% - 60px); /* 高度为剩余空间 */
-  background-color: #DFE5F0;; /* 可以自定义左侧的背景色 */
-  overflow-y: auto; /* 如果内容超出时可以垂直滚动 */
-}
+    /* 右侧内容区域 */
+    .right {
+        flex: 1;
+        max-width: 70%;
+    }
 
-/* 容器样式 */
-.container {
-  margin: 15px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 20px;
-  box-sizing: border-box;
-  margin-top: 15px; /* 为了给导航栏留空间 */
+    /* 容器样式 */
+    .container {
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .container:hover {
+        transform: translateY(-2px);
+    }
+
+    /* 标题样式 */
+    .container h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #394E6A;
+    }
+
+    /* 内容样式 */
+    .content {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* 按钮样式 */
+    .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #394E6A;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: #2e3a51;
+    }
+
+    /* 页脚样式 */
+    .footer-content {
+        text-align: center;
+        padding: 20px;
+        font-size: 14px;
+        color: #666;
+        margin-top: 40px;
+    }
 }
 
 .container img {
-  width: 100%;
-  border-radius: 10px;
-  margin: 0;
+width: 100%;
+border-radius: 10px;
+margin: 0;
 }
 
 .title {
-  text-align: center;
-  font-size: 36px;
-  font-weight: bold;
-  margin: 20px 0;
+text-align: center;
+font-size: 36px;
+font-weight: bold;
+margin: 20px 0;
 }
 
 .content {
-  font-size: 18px;
-  line-height: 1.6;
+font-size: 18px;
+line-height: 1.6;
 }
 
 /* 支持 Markdown 格式的文本样式 */
 
 /* 标题样式 */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-  margin: 20px 0;
-  color: #394E6A;
+font-weight: bold;
+margin: 20px 0;
+color: #394E6A;
 }
 
 h1 {
-  font-size: 36px;
+font-size: 36px;
 }
 
 h2 {
-  font-size: 32px;
+font-size: 32px;
 }
 
 h3 {
@@ -123,15 +159,15 @@ h3 {
 }
 
 h4 {
-  font-size: 24px;
+font-size: 24px;
 }
 
 h5 {
-  font-size: 20px;
+font-size: 20px;
 }
 
 h6 {
-  font-size: 18px;
+font-size: 18px;
 }
 
 /* 无序列表 */
