@@ -172,13 +172,6 @@
                 <i class="fas fa-search"></i>
             </div>
 
-            <div class="container weather-container" id="weather-container">
-                <div class="title">🌤️ 今日天气</div>
-                <div class="content" id="weather-content">
-                    <p>正在加载天气信息...</p>
-                </div>
-            </div>
-
             <div id="blog-list">
                 <!-- 博客内容将通过JavaScript动态加载 -->
             </div>
@@ -201,56 +194,12 @@
         }
     }
 
-    // 更新天气信息
-    async function updateWeatherInfo() {
-        const weatherContent = document.getElementById('weather-content');
-        try {
-            // 检查缓存
-            const cachedWeather = localStorage.getItem('weatherData');
-            const cachedTime = localStorage.getItem('weatherLastUpdate');
-            const currentTime = new Date().getTime();
-
-            // 如果缓存存在且未过期（6小时 = 21600000毫秒）
-            if (cachedWeather && cachedTime && (currentTime - parseInt(cachedTime)) < 21600000) {
-                const weatherData = JSON.parse(cachedWeather);
-                updateWeatherDisplay(weatherData);
-                return;
-            }
-
-            const weatherData = await getWeatherData();
-            // 更新缓存
-            localStorage.setItem('weatherData', JSON.stringify(weatherData));
-            localStorage.setItem('weatherLastUpdate', currentTime.toString());
-            updateWeatherDisplay(weatherData);
-        } catch (error) {
-            console.error('更新天气信息时出错:', error);
-            weatherContent.innerHTML = '<p>天气信息获取失败，请稍后再试。</p>';
-        }
-    }
-
-    // 更新天气显示
-    function updateWeatherDisplay(weatherData) {
-        const weatherContent = document.getElementById('weather-content');
-        const weatherLines = weatherData.split('\n');
-        const [weather, humidity, wind] = weatherLines;
-        const currentTime = formatDateTime(new Date());
-
-        weatherContent.innerHTML = `
-            <div class="weather-info">
-                <p>🕒 更新时间：${currentTime}</p>
-                <p>🌤️ 天气状况：${weather}</p>
-                <p>💧 ${humidity}</p>
-                <p>🌪️ ${wind}</p>
-            </div>
-        `;
-    }
-
     // 初始化博客数据
     async function initializeBlogs() {
         try {
             // 如果localStorage中没有博客数据，则使用默认数据初始化
             if (!localStorage.getItem('blogs')) {
-                const defaultBlogs = [];
+                const defaultBlogs = await getDefaultBlogs();
                 localStorage.setItem('blogs', JSON.stringify(defaultBlogs));
             }
 
@@ -258,10 +207,11 @@
             let blogs = JSON.parse(localStorage.getItem('blogs'));
             renderBlogs(blogs);
 
-            // 初始化天气信息
-            await updateWeatherInfo();
+            // 立即更新一次天气和时间
+            await updateWeatherAndTime();
         } catch (error) {
             console.error('初始化博客数据时出错:', error);
+            // 如果出错，显示一个简单的错误消息
             const blogList = document.getElementById('blog-list');
             blogList.innerHTML = '<div class="container blog-container"><div class="title">加载失败</div><div class="content">博客数据加载失败，请刷新页面重试。</div></div>';
         }
@@ -273,14 +223,29 @@
         blogList.innerHTML = '';
         
         if (blogsToRender && blogsToRender.length > 0) {
-            blogsToRender.forEach(blog => {
+            // 对博客进行排序，置顶的博客显示在前面
+            const sortedBlogs = [...blogsToRender].sort((a, b) => (b.isSticky || false) - (a.isSticky || false));
+            
+            sortedBlogs.forEach(blog => {
                 const blogContainer = document.createElement('div');
                 blogContainer.className = 'container blog-container';
-                blogContainer.innerHTML = `
-                    <div class="title">📄<a href="blog-detail.html?id=${blog.id}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
-                    <div class="date">📅 ：${blog.date}</div>
-                    <div class="content">${blog.content}</div>
-                `;
+                
+                // 根据是否置顶决定是否添加链接
+                if (blog.isSticky) {
+                    blogContainer.innerHTML = `
+                        <div class="title">📌${blog.title}</div>
+                        <div class="date">📅 ：${blog.date}<span class="sticky-badge">置顶</span></div>
+                        <div class="content">${blog.content}</div>
+                    `;
+                } else {
+                    blogContainer.innerHTML = `
+                        <div class="title">📄<a href="blog-detail.html?id=${blog.id}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
+                        <div class="date">📅 ：${blog.date}</div>
+                        <div class="content">${blog.content}</div>
+                    `;
+                }
+                
+                
                 blogList.appendChild(blogContainer);
             });
         } else {
@@ -308,6 +273,29 @@
         document.getElementById('running-days').textContent = differenceInDays;
     }
 
+    // 更新天气和时间信息
+    async function updateWeatherAndTime() {
+        try {
+            const updatedBlog = await updateBlogContent();
+            let blogs = JSON.parse(localStorage.getItem('blogs') || '[]');
+            if (blogs.length > 0) {
+                // 查找是否已存在天气博客（通过标题前缀判断）
+                const weatherBlogIndex = blogs.findIndex(blog => blog.title.startsWith('今日天气：'));
+                if (weatherBlogIndex !== -1) {
+                    // 如果存在天气博客，只更新它
+                    blogs[weatherBlogIndex] = updatedBlog;
+                } else {
+                    // 如果不存在天气博客，添加到列表末尾
+                    blogs.push(updatedBlog);
+                }
+                localStorage.setItem('blogs', JSON.stringify(blogs));
+                renderBlogs(blogs);
+            }
+        } catch (error) {
+            console.error('更新天气和时间信息时出错:', error);
+        }
+    }
+
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
         initializeBlogs();
@@ -320,8 +308,8 @@
         // 每6小时更新一次一言
         setInterval(fetchDailyQuote, 21600000);
 
-        // 每6小时更新一次天气信息
-        setInterval(updateWeatherInfo, 21600000);
+        // 每分钟更新一次天气和时间
+        setInterval(updateWeatherAndTime, 60000);
     });
     </script>
 </body>
