@@ -88,6 +88,31 @@
             transition: opacity 0.3s ease-in-out;
         }
         /* === 样式结束 === */
+
+        /* === 新增：手机屏幕适配 - 调整进度条 === */
+        @media (max-width: 768px) { /* 当屏幕宽度小于等于 768px 时应用 */
+            #reading-progress-container {
+                width: 6px;      /* 使进度条更细 */
+                right: 5px;      /* 让它更靠近屏幕边缘 */
+                border-radius: 3px;
+                margin-top: 60px; /* 可以适当调整边距 */
+                margin-bottom: 10px;
+            }
+
+            #reading-progress-bar {
+                border-radius: 3px; /* 匹配容器圆角 */
+            }
+
+            #reading-progress-percentage {
+                right: 15px;     /* 调整百分比位置 (新 right + 新 width + 间隙) */
+                bottom: 15px;    /* 也可以调整底部距离 */
+                font-size: 10px; /* 使字体更小 */
+                padding: 2px 4px; /* 减小内边距 */
+                /* 或者，如果你觉得百分比在手机上太占地方，可以单独隐藏它： */
+                /* display: none; */
+            }
+        }
+        /* === 适配结束 === */
     </style>
 </head>
 <body>
