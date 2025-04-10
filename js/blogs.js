@@ -63,7 +63,8 @@ export function startDynamicTimeUpdate() {
 }
 
 // 渲染博客列表 (移除调试代码后)
-function renderBlogs(blogsToRender) {
+export function renderBlogs(blogsToRender) {
+    // console.log("RenderBlogs called with:", blogsToRender); // 确认调用和数据
     const blogList = document.getElementById('blog-list');
     if (!blogList) {
         // 保留这个基础检查，因为它对功能很重要
