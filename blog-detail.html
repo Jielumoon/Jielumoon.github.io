@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>博客详情 - Team414's Blog</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .blog-detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .blog-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #394E6A;
+        }
+
+        .blog-meta {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .blog-content {
+            line-height: 1.6;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #394E6A;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #2c3d54;
+            text-decoration: none;
+        }
+
+        /* === 阅读进度条样式 (修改后) === */
+        #reading-progress-container {
+            position: fixed;
+            right: 200px;     /* 例如从 10px 增加到 25px */
+            top: 0;
+            bottom: 0;
+            margin-top: 80px;
+            margin-bottom: 20px;
+            width: 12px;
+            background-color: #e0e0e0;
+            border-radius: 6px;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        #reading-progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;          /* 从顶部开始 */
+            width: 100%;
+            height: 0%;      /* 初始高度为 0, JS 会更新 */
+            background-color: #394E6A;
+            border-radius: 6px; /* 相应调整圆角 */
+            transition: height 0.1s ease-out;
+        }
+
+        #reading-progress-percentage {
+            position: fixed;
+            right: 150px;     /* 例如从 25px 增加到 45px (容器 right + 容器 width + 间隙) */
+            bottom: 25px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #394E6A;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 3px 6px;
+            border-radius: 4px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        /* === 样式结束 === */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <a href="https://egg-dan.space/" style="color: #394E6A; text-decoration: none;">📅Team414's Blog</a>
+        </h1>
+    </header>
+
+    <div class="blog-detail-container container">
+        <a href="index.html" class="back-button">← 返回首页</a>
+        <h1 id="blog-title" class="blog-title"></h1>
+        <div id="blog-meta" class="blog-meta"></div>
+        <div id="blog-content" class="blog-content"></div>
+    </div>
+
+    <!-- === 新增：阅读进度指示器 === -->
+    <div id="reading-progress-container">
+        <div id="reading-progress-bar"></div>
+        <span id="reading-progress-percentage">0%</span>
+    </div>
+    <!-- === 新增结束 === -->
+
+    <script type="module">
+        import { parseFrontmatter } from './js/blogs.js';
+
+        function getBlogIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        async function loadBlogContent() {
+            const blogId = getBlogIdFromUrl();
+            const titleElement = document.getElementById('blog-title');
+            const metaElement = document.getElementById('blog-meta');
+            const contentElement = document.getElementById('blog-content');
+
+            if (!titleElement || !metaElement || !contentElement) {
+                 console.error("Blog detail page structure is missing required elements (title, meta, or content).");
+                 if(contentElement) contentElement.innerHTML = "<p>页面结构错误，无法加载博客。</p>";
+                 return;
+            }
+
+            if (!blogId) {
+                console.error("No blog ID found in URL.");
+                titleElement.textContent = '错误';
+                metaElement.textContent = '';
+                contentElement.innerHTML = '<p>未在网址中找到博客ID。</p><p><a href="index.html">返回首页</a></p>';
+                return;
+            }
+
+            const blogPath = `./blogs/${decodeURIComponent(blogId)}/blog.md`;
+
+            try {
+                const response = await fetch(blogPath);
+
+                if (!response.ok) {
+                    throw new Error(`无法加载博客文件 "${blogPath}"，服务器响应: ${response.status} ${response.statusText}`);
+                }
+                const markdownContent = await response.text();
+
+                const { frontmatter, content: rawMarkdownBody } = parseFrontmatter(markdownContent);
+
+                const pageTitle = frontmatter.title || decodeURIComponent(blogId);
+                document.title = `${pageTitle} - Team414's Blog`;
+                titleElement.textContent = pageTitle;
+                if (frontmatter.date) {
+                    metaElement.textContent = `发布时间：${frontmatter.date}`;
+                } else {
+                    metaElement.textContent = '';
+                }
+
+                if (typeof marked === 'undefined' || typeof marked.parse !== 'function') {
+                    throw new Error("Markdown 渲染库 (marked.js) 未能正确加载。");
+                }
+                contentElement.innerHTML = marked.parse(rawMarkdownBody);
+
+            } catch (error) {
+                console.error('加载或渲染博客内容时出错:', error);
+                document.title = `错误 - Team414's Blog`;
+                titleElement.textContent = '加载错误';
+                metaElement.textContent = '';
+                contentElement.innerHTML = `
+                    <p>抱歉，无法加载博客 "${decodeURIComponent(blogId)}"。</p>
+                    <p><strong>错误详情:</strong> ${error.message}</p>
+                    <p>请检查文件路径是否正确，或查看控制台获取更多信息。</p>
+                    <p><a href="index.html">返回首页</a></p>
+                `;
+            }
+        }
+
+        // === 新增：阅读进度逻辑 ===
+        function updateReadingProgress() {
+            const progressBar = document.getElementById('reading-progress-bar');
+            const percentageText = document.getElementById('reading-progress-percentage');
+            if (!progressBar || !percentageText) return; // 确保元素存在
+
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            // 使用 document.documentElement.scrollHeight 获取整个文档的高度
+            const scrollHeight = document.documentElement.scrollHeight;
+            // 使用 document.documentElement.clientHeight 获取视口的高度
+            const clientHeight = document.documentElement.clientHeight;
+
+            // 计算可滚动的最大距离
+            const maxScroll = scrollHeight - clientHeight;
+
+            // 防止除以零
+            if (maxScroll <= 0) {
+                progressBar.style.height = '0%'; // 如果不可滚动，进度为0
+                // percentageText.style.visibility = 'hidden'; // 隐藏百分比
+                percentageText.style.opacity = '0';
+                return;
+            }
+
+            // 计算滚动百分比
+            let scrollPercent = (scrollTop / maxScroll) * 100;
+            // 确保百分比在 0 到 100 之间
+            scrollPercent = Math.max(0, Math.min(100, scrollPercent));
+
+            // 更新进度条高度
+            progressBar.style.height = scrollPercent + '%';
+
+            // 更新百分比文本
+            percentageText.textContent = Math.round(scrollPercent) + '%';
+            // percentageText.style.visibility = 'visible'; // 显示百分比
+            percentageText.style.opacity = '1'; // 设为不透明
+        }
+
+        // 页面加载和滚动时更新进度
+        window.addEventListener('scroll', updateReadingProgress);
+        // 页面加载完成后也调用一次，以设置初始状态
+        // （如果页面初始不可滚动，则进度为0）
+        // === 修改：确保在 loadBlogContent 完成后，或者 DOMContentLoaded 后调用 ===
+        // document.addEventListener('DOMContentLoaded', updateReadingProgress); // 将初始调用移到下面
+
+        // === -->
+
+        // 页面加载完成后执行加载博客内容的函数
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlogContent(); // 加载博客内容
+            // 在 DOM 加载后也调用一次进度更新，确保初始状态正确
+            updateReadingProgress();
+        });
+    </script>
+</body>
+</html>
