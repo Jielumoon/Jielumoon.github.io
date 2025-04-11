@@ -80,7 +80,7 @@ export function renderBlogs(blogsToRender) {
             blogContainer.className = 'container blog-container';
             // 保持使用 encodeURIComponent
             blogContainer.innerHTML = `
-                <div class="title">📄<a href="blog-detail.html?id=${encodeURIComponent(blog.id)}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
+                <div class="title">${blog.isSticky ? '<span class="sticky-badge">置顶</span> ' : ''}📄<a href="blog-detail.html?id=${encodeURIComponent(blog.id)}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
                 <div class="date">📅 ：${blog.date}</div>
                 <div class="content">${blog.content}</div>
             `;
@@ -88,7 +88,7 @@ export function renderBlogs(blogsToRender) {
             // 移除了 console.log(`Appended blog container...`)
         });
     } else {
-         blogList.innerHTML = '<div class=\"container blog-container\"><div class=\"title\">暂无博客</div><div class=\"content\">目前没有可显示的博客内容。</div></div>';
+         blogList.innerHTML = '<div class="container blog-container"><div class="title">暂无博客</div><div class="content">目前没有可显示的博客内容。</div></div>';
          // 移除了 console.log("Rendered 'No blogs' message.")
     }
 }
@@ -106,7 +106,7 @@ async function initializePage() {
         console.error('初始化博客时出错:', error);
          const blogList = document.getElementById('blog-list');
          if(blogList) {
-             blogList.innerHTML = '<div class=\"container blog-container\"><div class=\"title\">加载博客出错</div></div>';
+             blogList.innerHTML = '<div class="container blog-container"><div class="title">加载博客出错</div></div>';
          }
     }
     // 如果需要启动动态时间，也在这里调用

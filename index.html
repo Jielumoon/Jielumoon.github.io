@@ -14,12 +14,13 @@
     .sticky-badge {
         display: inline-block;
         padding: 2px 6px;
-        background-color: #f5f5f5;
-        color: #666;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        font-size: 0.8em;
-        margin-left: 8px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.55em;
+        margin-right: 8px;
+        vertical-align: middle;
     }
 
     * {
@@ -138,7 +139,7 @@
 <body>
     <header>
         <h1>
-            <a href="https://xxxxx.xxxx/" style="color: #394E6A; text-decoration: none;">📅Team414's Blog</a>
+            <a href="https://github.com/Jielumoon/" style="color: #394E6A; text-decoration: none;">📅Team414's Blog</a>
         </h1>
     </header>
 
@@ -226,8 +227,44 @@
             }
         }
 
-        // 运行天数计算等其他独立逻辑...
-        // function calculateRunningDays() { ... } // 如果有这个函数，保留它
+        // === 新增：计算网站运行天数函数 ===
+        function calculateRunningDays() {
+            const runningDaysElement = document.getElementById('running-days');
+            if (!runningDaysElement) {
+                console.error("Element with ID 'running-days' not found!");
+                return; // 如果找不到元素则退出
+            }
+
+            // --- !!! 请将这里的日期修改为你网站的实际起始日期 !!! ---
+            const startDateString = '2025-03-11'; // 格式：YYYY-MM-DD
+            // ---------------------------------------------------------
+
+            const startDate = new Date(startDateString);
+            const currentDate = new Date();
+
+            // 检查起始日期是否有效
+            if (isNaN(startDate.getTime())) {
+                console.error("无效的起始日期格式或日期:", startDateString);
+                runningDaysElement.textContent = '无效日期';
+                return;
+            }
+
+            // 计算时间差（毫秒）
+            const differenceInTime = currentDate.getTime() - startDate.getTime();
+
+            // 转换为天数 (向下取整)
+            // 1000ms * 60s * 60min * 24h
+            const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+
+            // 更新页面上的天数，确保天数不为负
+            if (differenceInDays >= 0) {
+                runningDaysElement.textContent = differenceInDays;
+            } else {
+                // 如果起始日期在未来，显示 0
+                runningDaysElement.textContent = '0';
+            }
+        }
+        // === 新增函数结束 ===
 
         // === 修改点 2: 恢复 searchBlogs 的完整逻辑 ===
         async function searchBlogs() {
@@ -264,20 +301,18 @@
 
             } catch (error) {
                 console.error("Error during search:", error);
-                // 可以在这里给用户一些反馈，比如显示错误信息
             }
         }
         // === 修改结束 ===
-
-
-        // --- 不需要在这里定义 initializeBlogs 或 renderBlogs 了 ---
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 调用每日一言
             fetchDailyQuote();
-            // 调用运行天数计算 (如果存在)
-            // calculateRunningDays();
+
+            // === 修改点：在这里调用计算运行天数的函数 ===
+            calculateRunningDays();
+            // === 修改结束 ===
 
             // 绑定搜索事件监听器
             const searchInputElement = document.getElementById('search-input');
