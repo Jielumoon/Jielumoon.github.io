@@ -62,34 +62,99 @@ export function startDynamicTimeUpdate() {
     setInterval(updateDynamicTime, 1000); // 每秒更新一次
 }
 
-// 渲染博客列表 (移除调试代码后)
+// 分页相关变量
+let currentPage = 1;
+const blogsPerPage = 4;
+
+// 渲染博客列表
 export function renderBlogs(blogsToRender) {
-    // console.log("RenderBlogs called with:", blogsToRender); // 确认调用和数据
     const blogList = document.getElementById('blog-list');
     if (!blogList) {
-        // 保留这个基础检查，因为它对功能很重要
         console.error("Element with ID 'blog-list' not found!");
         return;
     }
     blogList.innerHTML = ''; // 清空旧内容
 
     if (blogsToRender && blogsToRender.length > 0) {
-         blogsToRender.forEach(blog => {
-            // 移除了 try...catch
+        // 计算总页数
+        const totalPages = Math.ceil(blogsToRender.length / blogsPerPage);
+        
+        // 获取当前页的博客
+        const startIndex = (currentPage - 1) * blogsPerPage;
+        const endIndex = startIndex + blogsPerPage;
+        const currentPageBlogs = blogsToRender.slice(startIndex, endIndex);
+
+        // 渲染当前页的博客
+        currentPageBlogs.forEach(blog => {
             const blogContainer = document.createElement('div');
             blogContainer.className = 'container blog-container';
-            // 保持使用 encodeURIComponent
             blogContainer.innerHTML = `
                 <div class="title">${blog.isSticky ? '<span class="sticky-badge">置顶</span> ' : ''}📄<a href="blog-detail.html?id=${encodeURIComponent(blog.id)}" style="color: inherit; text-decoration: none;">${blog.title}</a></div>
                 <div class="date">📅 ：${blog.date}</div>
                 <div class="content">${blog.content}</div>
             `;
             blogList.appendChild(blogContainer);
-            // 移除了 console.log(`Appended blog container...`)
         });
+
+        // 添加分页控件
+        if (totalPages > 1) {
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-container';
+            
+            // 上一页按钮
+            const prevButton = document.createElement('button');
+            prevButton.textContent = '上一页';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderBlogs(blogsToRender);
+                }
+            };
+
+            // 页码按钮容器
+            const pageButtonsContainer = document.createElement('div');
+            pageButtonsContainer.className = 'page-buttons';
+
+            // 计算显示的页码范围
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            // 如果总页数小于5，调整起始页码
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            // 创建页码按钮
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = 'page-button' + (i === currentPage ? ' current' : '');
+                pageButton.onclick = () => {
+                    currentPage = i;
+                    renderBlogs(blogsToRender);
+                };
+                pageButtonsContainer.appendChild(pageButton);
+            }
+
+            // 下一页按钮
+            const nextButton = document.createElement('button');
+            nextButton.textContent = '下一页';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderBlogs(blogsToRender);
+                }
+            };
+
+            paginationContainer.appendChild(prevButton);
+            paginationContainer.appendChild(pageButtonsContainer);
+            paginationContainer.appendChild(nextButton);
+            blogList.appendChild(paginationContainer);
+        }
     } else {
-         blogList.innerHTML = '<div class="container blog-container"><div class="title">暂无博客</div><div class="content">目前没有可显示的博客内容。</div></div>';
-         // 移除了 console.log("Rendered 'No blogs' message.")
+        blogList.innerHTML = '<div class="container blog-container"><div class="title">暂无博客</div><div class="content">目前没有可显示的博客内容。</div></div>';
     }
 }
 

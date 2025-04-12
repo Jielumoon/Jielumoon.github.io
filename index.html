@@ -235,9 +235,8 @@
                 return; // 如果找不到元素则退出
             }
 
-            // --- !!! 请将这里的日期修改为你网站的实际起始日期 !!! ---
+            //网站日期起始日
             const startDateString = '2025-03-11'; // 格式：YYYY-MM-DD
-            // ---------------------------------------------------------
 
             const startDate = new Date(startDateString);
             const currentDate = new Date();
@@ -303,16 +302,13 @@
                 console.error("Error during search:", error);
             }
         }
-        // === 修改结束 ===
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 调用每日一言
             fetchDailyQuote();
 
-            // === 修改点：在这里调用计算运行天数的函数 ===
+            //运行天数
             calculateRunningDays();
-            // === 修改结束 ===
 
             // 绑定搜索事件监听器
             const searchInputElement = document.getElementById('search-input');
