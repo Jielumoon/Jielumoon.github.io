@@ -1,0 +1,239 @@
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #DFE5F0;
+            color: #394E6A;
+            padding-top: 60px; /* 增加这个样式，使页面整体下移60px */
+            font-weight: bold;
+        }
+
+        /* 顶部导航栏 */
+        header {
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 px;
+        }
+
+        
+
+        
+
+
+
+        header h1 {
+            font-weight: bold;
+            font-size: 20px;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+
+        /* 容器样式 */
+        .container {
+            margin: 15px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-sizing: border-box;
+            margin-top: 15px; /* 为了给导航栏留空间 */
+        }
+
+        .container img {
+            width: 100%;
+            border-radius: 10px;
+            margin: 0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .content {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .icons a {
+            font-size: 30px;
+            color: #394E6A;
+            text-decoration: none;
+        }
+
+/* 页尾容器 */
+.footer-content {
+    font-size: 20px; /* 调大字体大小 */
+    text-align: center; /* 居中对齐 */
+}
+        /* 样式调整 */
+        .btn {
+            margin-top: 20px;
+            display: block;
+            padding: 10px;
+            text-align: center;
+            background-color: #394E6A;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        .btn:hover {
+            background-color: #2e3a51;
+        }
+
+/* --- 分页样式 --- */
+#pagination-container {
+    text-align: center; /* 水平居中 */
+    margin-top: 20px;   /* 与博客列表的间距 */
+    margin-bottom: 20px; /* 底部间距 */
+}
+
+.pagination button {
+    background-color: #f0f0f0; /* 按钮背景色 */
+    border: 1px solid #ddd;    /* 边框 */
+    color: #394E6A;          /* 文字颜色 */
+    padding: 8px 12px;       /* 内边距 */
+    margin: 0 4px;           /* 按钮间距 */
+    border-radius: 4px;      /* 圆角 */
+    cursor: pointer;         /* 鼠标指针 */
+    transition: background-color 0.3s ease; /* 过渡效果 */
+    font-size: 0.9em;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #e0e0e0; /* 鼠标悬停效果 */
+}
+
+.pagination button:disabled {
+    background-color: #e9ecef; /* 禁用状态背景色 */
+    color: #6c757d;          /* 禁用状态文字颜色 */
+    cursor: default;         /* 禁用状态鼠标指针 */
+}
+
+.pagination button.active {
+    background-color: #394E6A; /* 当前页激活状态背景色 */
+    color: white;              /* 当前页激活状态文字颜色 */
+    border-color: #394E6A;     /* 当前页激活状态边框颜色 */
+}
+
+/* 为移动端和PC端可能需要调整间距或字体大小 */
+/* 例如在 stylespc.css 中可以覆盖或增加 */
+/* @media screen and (min-width: 800px) {
+    .pagination button {
+        padding: 10px 15px;
+        font-size: 1em;
+    }
+} */
+
+/* --- 博客预览之间的间距 --- */
+.blog-post {
+    margin-bottom: 25px; /* 增加博客条目之间的下边距 */
+    padding-bottom: 15px; /* 在内容下方增加内边距 */
+    border-bottom: 1px solid #eee; /* 添加分隔线 */
+}
+
+.blog-post:last-child {
+    margin-bottom: 0; /* 最后一个条目不需要下边距 */
+    border-bottom: none; /* 最后一个条目不需要分隔线 */
+}
+
+/* --- 确保 .sticky-badge 样式存在 --- */
+.sticky-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.55em; /* 这个可能需要调整 */
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* 分页控件样式 */
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination-container button {
+    padding: 5px 15px;
+    margin: 0 5px;
+    background-color: #394E6A;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-container .page-buttons {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.pagination-container .page-button {
+    padding: 5px 10px;
+    margin: 0 2px;
+    background-color: #c2cbd9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-container .page-button.current {
+    background-color: #1a365d;
+    font-weight: bold;
+}
+
+/* Giscus 评论系统样式 */
+.comments-container {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eaeaea;
+}
+
+.comments-container::before {
+    content: "评论";
+    display: block;
+    font-size: 1.5em;
+    color: #394E6A;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .comments-container {
+        margin-top: 30px;
+        padding-top: 15px;
+    }
+    
+    .comments-container::before {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+}

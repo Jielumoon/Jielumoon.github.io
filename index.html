@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Team414's Blog</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/stylespc.css" media="screen and (min-width: 800px)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <style>
+    .sticky-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.55em;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    a { color: #66a7ff }
+
+    pre, code {
+        font-family: 'Courier New', monospace;
+        background-color: #f7f7f7;
+        border-radius: 3px;
+        padding: 3px;
+        overflow-x: auto;
+    }
+
+    code {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: normal;
+    }
+
+    blockquote {
+        background-color: #f9f9f9;
+        border-left: 4px solid #394E6A;
+        padding-left: 15px;
+        margin: 20px 0;
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        display: block;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th { background-color: #f0f0f0; }
+
+    hr {
+        border: 0;
+        border-top: 2px solid #394E6A;
+        margin: 20px 0;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 13px;
+    }
+
+    .search-input {
+        padding: 8px 12px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.3s ease;
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+        font-weight: bold;
+    }
+
+    .search-input:focus {
+        border-color: #394E6A;
+        font-weight: bold;
+    }
+
+    .search-container i {
+        margin-left: 10px;
+        font-size: 20px;
+        color: #888;
+    }
+
+    .blog-container.title,
+    .blog-container.date {
+        width: 100%;
+    }
+
+    .blog-container.content {
+        width: 100%;
+        word-wrap: break-word;
+    }
+
+    ol li, ul li { margin-left: 15px; }
+
+    .weather-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .weather-info h3 {
+        margin-bottom: 10px;
+        color: #394E6A;
+    }
+
+    .weather-info p {
+        margin: 5px 0;
+        font-size: 1.1em;
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            <a href="https://github.com/Jielumoon/" style="color: #394E6A; text-decoration: none;">📅Team414's Blog</a>
+        </h1>
+    </header>
+
+    <div class="layout">
+        <div class="left">
+            <div class="container">
+                <div class="title">Team414的</div>
+                <div class="title">🗂博客</div>
+            </div>
+            <div class="container">
+                <div class="title">📝每日一言</div>
+                <div class="content" id="daily-quote">
+                    <p>正在加载...</p>
+                </div>
+            </div>
+            <div class="container">
+                <img src="blog.webp" alt="关于我" style="width: 100%; border-radius: 10px;">
+                <div class="title">🌐About</div>
+                <div class="content">
+                    <p>记录了Team414开发经历和所思所想✍️</p>
+                    <p>希望我的探索和经验也能对你的开发产生一些启发🤠</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="content footer-content">
+                    <p>🎬网站已安全运行了 <span id="running-days"></span> 天</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="container search-container">
+                <input type="text" id="search-input" placeholder="输入关键词搜索博客" class="search-input">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div id="blog-list">
+                <!-- 博客内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/blogs.js" type="module"></script>
+
+    <script type="module">
+        // === 修改点 1: 导入需要的函数 ===
+        import { getDefaultBlogs, renderBlogs } from './js/blogs.js'; // 导入 getDefaultBlogs 和 renderBlogs
+
+        // 获取每日一言 (保持不变)
+        async function fetchDailyQuote() {
+            const quoteElement = document.getElementById('daily-quote');
+            if (!quoteElement) return;
+
+            const cacheKeyData = 'dailyQuoteData';
+            const cacheKeyTimestamp = 'dailyQuoteTimestamp';
+            const cacheDuration = 6 * 60 * 60 * 1000;
+
+            try {
+                const cachedTimestamp = localStorage.getItem(cacheKeyTimestamp);
+                const cachedData = localStorage.getItem(cacheKeyData);
+                const now = Date.now();
+
+                if (cachedTimestamp && cachedData && (now - parseInt(cachedTimestamp, 10) < cacheDuration)) {
+                    console.log("Using cached daily quote.");
+                    const data = JSON.parse(cachedData);
+                    quoteElement.innerHTML = `<p>${data.hitokoto}</p><p style="font-size: 0.9em; color: #666; margin-top: 5px;">—— ${data.from}</p>`;
+                    return;
+                }
+
+                console.log("Fetching new daily quote from API.");
+                const response = await fetch('https://v1.hitokoto.cn/');
+                if (!response.ok) {
+                     throw new Error(`Hitokoto API request failed with status: ${response.status}`);
+                }
+                const data = await response.json();
+                quoteElement.innerHTML = `<p>${data.hitokoto}</p><p style="font-size: 0.9em; color: #666; margin-top: 5px;">—— ${data.from}</p>`;
+
+                localStorage.setItem(cacheKeyData, JSON.stringify(data));
+                localStorage.setItem(cacheKeyTimestamp, now.toString());
+                console.log("Stored new daily quote in cache.");
+
+            } catch (error) {
+                console.error('获取每日一言时出错:', error);
+                quoteElement.innerHTML = '<p>获取一言失败，请稍后再试。</p>';
+            }
+        }
+
+        // === 新增：计算网站运行天数函数 ===
+        function calculateRunningDays() {
+            const runningDaysElement = document.getElementById('running-days');
+            if (!runningDaysElement) {
+                console.error("Element with ID 'running-days' not found!");
+                return; // 如果找不到元素则退出
+            }
+
+            //网站日期起始日
+            const startDateString = '2025-03-11'; // 格式：YYYY-MM-DD
+
+            const startDate = new Date(startDateString);
+            const currentDate = new Date();
+
+            // 检查起始日期是否有效
+            if (isNaN(startDate.getTime())) {
+                console.error("无效的起始日期格式或日期:", startDateString);
+                runningDaysElement.textContent = '无效日期';
+                return;
+            }
+
+            // 计算时间差（毫秒）
+            const differenceInTime = currentDate.getTime() - startDate.getTime();
+
+            // 转换为天数 (向下取整)
+            // 1000ms * 60s * 60min * 24h
+            const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+
+            // 更新页面上的天数，确保天数不为负
+            if (differenceInDays >= 0) {
+                runningDaysElement.textContent = differenceInDays;
+            } else {
+                // 如果起始日期在未来，显示 0
+                runningDaysElement.textContent = '0';
+            }
+        }
+        // === 新增函数结束 ===
+
+        // === 修改点 2: 恢复 searchBlogs 的完整逻辑 ===
+        async function searchBlogs() {
+            // console.log("searchBlogs function triggered."); // 可以保留或移除调试日志
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) {
+                console.error("Search input element not found!");
+                return;
+            }
+            const searchTerm = searchInput.value.toLowerCase();
+            // console.log("Search term:", searchTerm);
+
+            try {
+                // console.log("Calling getDefaultBlogs for search...");
+                // 调用导入的 getDefaultBlogs 函数
+                const allBlogs = await getDefaultBlogs();
+                // console.log("Got blogs for search:", allBlogs);
+
+                if (!Array.isArray(allBlogs)) {
+                     console.error("Data from getDefaultBlogs is not an array:", allBlogs);
+                     return;
+                }
+
+                // 过滤博客
+                const filteredBlogs = allBlogs.filter(blog =>
+                    (blog.title && blog.title.toLowerCase().includes(searchTerm)) ||
+                    (blog.content && blog.content.toLowerCase().includes(searchTerm)) // 注意：这里是在预览内容中搜索
+                );
+                // console.log("Filtered blogs:", filteredBlogs);
+
+                // console.log("Calling renderBlogs with filtered results...");
+                // 调用导入的 renderBlogs 函数显示结果
+                renderBlogs(filteredBlogs);
+
+            } catch (error) {
+                console.error("Error during search:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 调用每日一言
+            fetchDailyQuote();
+
+            //运行天数
+            calculateRunningDays();
+
+            // 绑定搜索事件监听器
+            const searchInputElement = document.getElementById('search-input');
+            if (searchInputElement) {
+                searchInputElement.addEventListener('input', searchBlogs);
+                // console.log("Search input event listener added.");
+            } else {
+                console.error("Search input element not found on DOMContentLoaded!");
+            }
+
+            // 注意：初始的博客列表加载是由 js/blogs.js 内部处理的，这里不需要调用 initializeBlogs
+        });
+    </script>
+</body>
+</html>
