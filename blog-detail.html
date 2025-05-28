@@ -151,7 +151,8 @@
                     data-repo-id="R_kgDOOxgKfg"
                     data-category="General"
                     data-category-id="DIC_kwDOOxgKfs4CqpfW"
-                    data-mapping="pathname"
+                    data-mapping="specific"
+                    data-term=""
                     data-strict="0"
                     data-reactions-enabled="1"
                     data-emit-metadata="0"
@@ -197,6 +198,16 @@
                 metaElement.textContent = '';
                 contentElement.innerHTML = '<p>未在网址中找到博客ID。</p><p><a href="index.html">返回首页</a></p>';
                 return;
+            }
+
+            // 更新 Giscus 的 data-term
+            const giscusFrame = document.querySelector('iframe[src*="giscus.app"]');
+            if (giscusFrame) {
+                giscusFrame.remove();
+            }
+            const giscusScript = document.querySelector('script[src*="giscus.app"]');
+            if (giscusScript) {
+                giscusScript.setAttribute('data-term', blogId);
             }
 
             const blogPath = `./blogs/${decodeURIComponent(blogId)}/blog.md`;
@@ -278,12 +289,6 @@
 
         // 页面加载和滚动时更新进度
         window.addEventListener('scroll', updateReadingProgress);
-        // 页面加载完成后也调用一次，以设置初始状态
-        // （如果页面初始不可滚动，则进度为0）
-        // === 修改：确保在 loadBlogContent 完成后，或者 DOMContentLoaded 后调用 ===
-        // document.addEventListener('DOMContentLoaded', updateReadingProgress); // 将初始调用移到下面
-
-        // === -->
 
         // 页面加载完成后执行加载博客内容的函数
         document.addEventListener('DOMContentLoaded', () => {

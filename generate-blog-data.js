@@ -32,7 +32,7 @@ function parseFrontmatter(content) {
     };
 }
 
-// 获取博客内容预览（例如前 150 个字符）
+// 获取博客内容预览（前 150 个字符）
 function getContentPreview(markdownContent) {
     // 移除 Markdown 标题、加粗等标记，只保留纯文本
     let plainText = markdownContent
